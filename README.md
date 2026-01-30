@@ -410,6 +410,28 @@ Run tests:
 python test_api.py
 ```
 
+## 🧭 Local Test & CI Monitoring
+
+How to run the end-to-end tests locally (uses the backend virtualenv):
+
+```bash
+# from repository root
+cd backend
+source venv/bin/activate
+# install dependencies if needed
+pip install -r requirements.txt
+# start the backend in background
+nohup uvicorn app.main:app --host 127.0.0.1 --port 8003 --reload > ../backend-uvicorn.log 2>&1 &
+sleep 1
+# from repository root run tests
+cd ..
+python3 test_api.py
+```
+
+CI monitoring: the repository includes a GitHub Actions workflow at `.github/workflows/ci.yml` that runs the end-to-end tests on push/PR. If that workflow fails, `.github/workflows/notify-ci-failure.yml` (added here) will create a GitHub issue with the failure summary and a link to the run.
+
+If you prefer other notification channels (Slack, email), I can add integrations to the workflow.
+
 ## 📝 Project Structure
 
 ```
