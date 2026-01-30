@@ -10,6 +10,7 @@ from app.core.config import settings
 from app.db.session import init_db
 from app.api import auth, notes, tasks, calendar
 import os
+from pathlib import Path
 
 
 # Create FastAPI application
@@ -37,12 +38,12 @@ app.include_router(tasks.router, prefix="/api")
 app.include_router(calendar.router, prefix="/api")
 
 # Mount frontend static files (CSS, JS, images)
-# Frontend is now in a separate directory at project root
-# Path calculation: app/main.py -> app -> backend -> noteapp -> frontend
-frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "frontend")
-if os.path.exists(frontend_dir):
-    app.mount("/css", StaticFiles(directory=os.path.join(frontend_dir, "css")), name="css")
-    app.mount("/js", StaticFiles(directory=os.path.join(frontend_dir, "js")), name="js")
+# Determine project root reliably (go up 2 parents from backend/app -> noteapp)
+BASE_DIR = Path(__file__).resolve().parents[2]
+frontend_dir = BASE_DIR / "frontend"
+if frontend_dir.exists():
+    app.mount("/css", StaticFiles(directory=str(frontend_dir / "css")), name="css")
+    app.mount("/js", StaticFiles(directory=str(frontend_dir / "js")), name="js")
 
 
 @app.on_event("startup")
@@ -54,11 +55,10 @@ async def startup_event():
 @app.get("/", response_class=HTMLResponse)
 async def root():
     """Serve the frontend application."""
-    html_file = os.path.join(frontend_dir, "index.html")
-    
-    if os.path.exists(html_file):
-        with open(html_file, "r") as f:
-            return f.read()
+    html_file = frontend_dir / "index.html"
+
+    if html_file.exists():
+        return html_file.read_text()
     
     return """
     <html>
