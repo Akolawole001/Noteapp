@@ -21,8 +21,9 @@ COPY frontend/ ./frontend/
 # Set working directory to backend for running the app
 WORKDIR /app/backend
 
-# Expose port
+# Expose port (container default)
 EXPOSE 8000
 
-# Run the application from backend directory
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Run the application using the PORT env variable provided by Vercel
+# Remove --reload for production/CI environments
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
