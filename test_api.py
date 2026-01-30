@@ -182,9 +182,9 @@ def main():
     except Exception as e:
         results.add_test("Rejects invalid token", False, str(e))
     
-    # Test 4.3: CORS headers
+    # Test 4.3: CORS headers (send Origin header)
     try:
-        response = requests.options(f"{BASE_URL}/health", timeout=5)
+        response = requests.options(f"{BASE_URL}/health", headers={"Origin": "http://localhost:3000"}, timeout=5)
         cors_header = response.headers.get("Access-Control-Allow-Origin")
         if cors_header:
             results.add_test("CORS headers configured", True, f"Origin: {cors_header}")
@@ -278,7 +278,7 @@ def main():
             json={
                 "title": "Test Task",
                 "description": "Test task description",
-                "status": "pending",
+                "status": "todo",
                 "due_date": "2026-02-15T10:00:00"
             },
             timeout=5
