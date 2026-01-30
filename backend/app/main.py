@@ -38,9 +38,11 @@ app.include_router(calendar.router, prefix="/api")
 
 # Mount frontend static files (CSS, JS, images)
 # Frontend is now in a separate directory at project root
-frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend")
+# Path calculation: app/main.py -> app -> backend -> noteapp -> frontend
+frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "frontend")
 if os.path.exists(frontend_dir):
-    app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+    app.mount("/css", StaticFiles(directory=os.path.join(frontend_dir, "css")), name="css")
+    app.mount("/js", StaticFiles(directory=os.path.join(frontend_dir, "js")), name="js")
 
 
 @app.on_event("startup")
