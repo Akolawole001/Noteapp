@@ -344,7 +344,7 @@ def main():
     # Test 7.1: Create Event
     try:
         response = requests.post(
-            f"{BASE_URL}/api/calendar",
+            f"{BASE_URL}/api/calendar/events",
             headers=headers,
             json={
                 "title": "Test Event",
@@ -365,7 +365,7 @@ def main():
     
     # Test 7.2: Get all events
     try:
-        response = requests.get(f"{BASE_URL}/api/calendar", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/api/calendar/events", headers=headers, timeout=5)
         if response.status_code == 200:
             events = response.json()
             event_count = len(events) if isinstance(events, list) else 0
@@ -379,7 +379,7 @@ def main():
     if event_id:
         try:
             response = requests.put(
-                f"{BASE_URL}/api/calendar/{event_id}",
+                f"{BASE_URL}/api/calendar/events/{event_id}",
                 headers=headers,
                 json={
                     "title": "Updated Event",
@@ -399,7 +399,7 @@ def main():
     # Test 7.4: Delete event
     if event_id:
         try:
-            response = requests.delete(f"{BASE_URL}/api/calendar/{event_id}", headers=headers, timeout=5)
+            response = requests.delete(f"{BASE_URL}/api/calendar/events/{event_id}", headers=headers, timeout=5)
             if response.status_code in [200, 204]:
                 results.add_test("Delete calendar event", True, f"HTTP {response.status_code}")
             else:
