@@ -24,6 +24,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install requests
+          # Install Playwright and browsers
+          python -m playwright install --with-deps || true
 
       - name: Start backend (uvicorn)
         working-directory: backend
@@ -31,9 +33,14 @@ jobs:
           nohup uvicorn app.main:app --host 127.0.0.1 --port 8003 --reload > ../ci-uvicorn.log 2>&1 &
           sleep 3
 
-      - name: Run end-to-end tests
+      - name: Run backend Python E2E tests
         run: |
           python3 test_api.py
+
+      - name: Run UI Playwright tests
+        run: |
+          pip install pytest
+          pytest -q tests/e2e -k e2e
 
       - name: Upload uvicorn logs
         if: failure()
