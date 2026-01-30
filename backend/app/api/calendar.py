@@ -14,7 +14,7 @@ from app.domain.schemas import CalendarEventCreate, CalendarEventUpdate, Calenda
 router = APIRouter(prefix="/calendar", tags=["Calendar"])
 
 
-@router.get("/events", response_model=List[CalendarEventResponse])
+@router.get("/", response_model=List[CalendarEventResponse])
 def get_events(
     start_date: datetime = Query(None),
     end_date: datetime = Query(None),
@@ -44,7 +44,7 @@ def get_events(
     return events
 
 
-@router.get("/events/{event_id}", response_model=CalendarEventResponse)
+@router.get("/{event_id}", response_model=CalendarEventResponse)
 def get_event(
     event_id: int,
     db: Session = Depends(get_db),
@@ -65,7 +65,7 @@ def get_event(
     return event
 
 
-@router.post("/events", response_model=CalendarEventResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=CalendarEventResponse, status_code=status.HTTP_201_CREATED)
 def create_event(
     event_data: CalendarEventCreate,
     db: Session = Depends(get_db),
