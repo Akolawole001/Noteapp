@@ -1,10 +1,9 @@
 import time
-import pytest
 from playwright.sync_api import sync_playwright
 
 BASE_URL = "http://127.0.0.1:8003"
 
-@pytest.mark.e2e
+
 def test_register_login_create_note():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -12,44 +11,55 @@ def test_register_login_create_note():
 
         # Go to app
         page.goto(BASE_URL)
-        time.sleep(0.5)
 
-        # Open register modal or form (depends on frontend structure)
-        # This test assumes form fields with ids: #email, #password and buttons with ids
-        if page.query_selector('#register-email'):
-            page.fill('#register-email', f'test_ui_{int(time.time())}@example.com')
-            page.fill('#register-password', 'TestPass123!')
-            page.click('#register-submit')
-        else:
-            # Try to navigate to register route
-            try:
-                page.click('text=Register')
-            except Exception:
-                pass
+        # Generate a unique email for this test
+        test_email = f'test_ui_{int(time.time())}@example.com'
+        test_password = 'TestPass123!'
 
-        # Fallback: use API to create user if UI not present
-        # Attempt login
-        page.click('text=Login', timeout=2000)
-        page.fill('input[name="email"]', f'test_ui_{int(time.time())}@example.com')
-        page.fill('input[name="password"]', 'TestPass123!')
-        page.click('button[type="submit"]')
+        # Try to open register form via the "Create one" link if present
+        try:
+            # If login form present, click the create-account link
+            if page.query_selector('#loginForm'):
+                # click the anchor that shows register form
+                if page.query_selector('text=Create one'):
+                    page.click('text=Create one')
+                elif page.query_selector('text=Create Account'):
+                    page.click('text=Create Account')
 
-        # Wait for auth to complete (user menu appears)
-        page.wait_for_timeout(1000)
+            # Wait for register inputs
+            page.wait_for_selector('#registerEmail', timeout=3000)
+            page.fill('#registerEmail', test_email)
+            page.fill('#registerPassword', test_password)
+            # Click the create account button
+            page.click('button:has-text("Create Account")', timeout=3000)
+            # small wait for registration to complete
+            page.wait_for_timeout(500)
+        except Exception:
+            # Registration via UI may not be available or the user may already exist — fallback to API
+            import requests
+            resp = requests.post(f"{BASE_URL}/auth/register", json={"email": test_email, "password": test_password})
+            # ignore errors (user may already exist)
+
+        # Perform login using the visible login form
+        page.wait_for_selector('#loginEmail', timeout=5000)
+        page.fill('#loginEmail', test_email)
+        page.fill('#loginPassword', test_password)
+        # Click the Sign In button
+        page.click('button:has-text("Sign In")', timeout=5000)
+
+        # Wait for app to load (userEmail element populated)
+        page.wait_for_selector('#userEmail', timeout=5000)
 
         # Create a new note via UI
-        # Assumes a button with text 'New Note' and a form with inputs '#note-title' and '#note-content'
-        try:
-            page.click('text=New Note')
-            page.fill('#note-title', 'E2E Test Note')
-            page.fill('#note-content', 'This note was created by Playwright E2E test')
-            page.click('button:has-text("Save")')
-            page.wait_for_timeout(1000)
+        page.click('text=New Note')
+        page.wait_for_selector('#noteTitle', timeout=3000)
+        page.fill('#noteTitle', 'E2E Test Note')
+        page.fill('#noteContent', 'This note was created by Playwright E2E test')
+        page.click('button:has-text("Save Note")')
+        page.wait_for_timeout(800)
 
-            # Verify note appears
-            assert page.locator('text=E2E Test Note').count() >= 1
-        except Exception:
-            # If UI selectors differ, at least ensure API docs and front page are reachable
-            assert 'NoteApp' in page.content()
+        # Verify note appears in the notes list
+        notes = page.locator('text=E2E Test Note')
+        assert notes.count() >= 1
 
         browser.close()
