@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteApp - Notes, Tasks & Calendar</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Authentication Container -->
+    <div id="authContainer" class="auth-container">
+        <h1>NoteApp</h1>
+        <div id="authError" class="error" style="display: none;"></div>
+        
+        <!-- Login Form -->
+        <div id="loginForm">
+            <h2>Login</h2>
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button onclick="login()">Login</button>
+            <p style="text-align: center; margin-top: 15px;">
+                Don't have an account? <a href="#" onclick="showRegister(); return false;">Register</a>
+            </p>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerForm" style="display: none;">
+            <h2>Register</h2>
+            <input type="email" id="registerEmail" placeholder="Email" required>
+            <input type="password" id="registerPassword" placeholder="Password (min 8 chars, 1 upper, 1 lower, 1 digit)" required>
+            <button onclick="register()">Register</button>
+            <p style="text-align: center; margin-top: 15px;">
+                Already have an account? <a href="#" onclick="showLogin(); return false;">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="appContainer" class="app-container container">
+        <div class="header">
+            <h1>NoteApp</h1>
+            <button onclick="logout()">Logout</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('notes')">Notes</button>
+            <button class="tab" onclick="showSection('tasks')">Tasks</button>
+            <button class="tab" onclick="showSection('calendar')">Calendar</button>
+        </div>
+
+        <div class="content">
+            <!-- Notes Section -->
+            <div id="notesSection" class="section active">
+                <h2>My Notes</h2>
+                <div class="form-group">
+                    <input type="text" id="noteTitle" placeholder="Note title">
+                    <textarea id="noteContent" rows="4" placeholder="Note content"></textarea>
+                    <button onclick="createNote()">Add Note</button>
+                </div>
+                <div id="notesList"></div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div id="tasksSection" class="section">
+                <h2>My Tasks</h2>
+                <div class="form-group">
+                    <input type="text" id="taskTitle" placeholder="Task title">
+                    <textarea id="taskDescription" rows="3" placeholder="Task description"></textarea>
+                    <input type="datetime-local" id="taskDueDate">
+                    <select id="taskStatus">
+                        <option value="todo">To Do</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <button onclick="createTask()">Add Task</button>
+                </div>
+                <div id="tasksList"></div>
+            </div>
+
+            <!-- Calendar Section -->
+            <div id="calendarSection" class="section">
+                <h2>My Calendar</h2>
+                <div class="form-group">
+                    <input type="text" id="eventTitle" placeholder="Event title">
+                    <textarea id="eventDescription" rows="3" placeholder="Event description"></textarea>
+                    <label>Start Time</label>
+                    <input type="datetime-local" id="eventStartTime">
+                    <label>End Time</label>
+                    <input type="datetime-local" id="eventEndTime">
+                    <button onclick="createEvent()">Add Event</button>
+                </div>
+                <div id="eventsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
