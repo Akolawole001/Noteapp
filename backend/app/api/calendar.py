@@ -120,7 +120,7 @@ def create_event(
     return db_event
 
 
-@router.put("/events/{event_id}", response_model=CalendarEventResponse)
+@router.put("/{event_id}", response_model=CalendarEventResponse)
 def update_event(
     event_id: int,
     event_data: CalendarEventUpdate,
@@ -178,7 +178,7 @@ def update_event(
     return event
 
 
-@router.delete("/events/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_event(
     event_id: int,
     db: Session = Depends(get_db),
