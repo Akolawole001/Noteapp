@@ -117,7 +117,7 @@ fi
 
 # Test 4.3: CORS headers
 echo "Test 4.3: CORS headers present"
-CORS_RESPONSE=$(curl -s -I $BASE_URL/health)
+CORS_RESPONSE=$(curl -s -I -H "Origin: http://localhost:3000" $BASE_URL/health)
 if echo "$CORS_RESPONSE" | grep -qi "access-control"; then
     test_result "CORS headers configured" "pass"
 else
@@ -206,9 +206,9 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # Test 6.1: Create Task
 echo "Test 6.1: Create task"
 TASK_RESPONSE=$(curl -s -X POST $BASE_URL/api/tasks \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Test Task","description":"Test task description","status":"pending","due_date":"2026-02-15T10:00:00"}')
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"title":"Test Task","description":"Test task description","status":"todo","due_date":"2026-02-15T10:00:00"}')
 TASK_ID=$(echo "$TASK_RESPONSE" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
 
 if [ -n "$TASK_ID" ]; then
@@ -266,7 +266,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 # Test 7.1: Create Event
 echo "Test 7.1: Create calendar event"
-EVENT_RESPONSE=$(curl -s -X POST $BASE_URL/api/calendar \
+EVENT_RESPONSE=$(curl -s -X POST $BASE_URL/api/calendar/events \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"title":"Test Event","description":"Test event description","start_time":"2026-02-15T10:00:00","end_time":"2026-02-15T11:00:00"}')
@@ -280,7 +280,7 @@ fi
 
 # Test 7.2: Get all events
 echo "Test 7.2: Retrieve all events"
-EVENTS_LIST=$(curl -s -X GET $BASE_URL/api/calendar \
+EVENTS_LIST=$(curl -s -X GET $BASE_URL/api/calendar/events \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 if echo "$EVENTS_LIST" | grep -q "Test Event"; then
@@ -294,7 +294,7 @@ fi
 # Test 7.3: Update event
 if [ -n "$EVENT_ID" ]; then
     echo "Test 7.3: Update event"
-    UPDATE_EVENT=$(curl -s -X PUT $BASE_URL/api/calendar/$EVENT_ID \
+        UPDATE_EVENT=$(curl -s -X PUT $BASE_URL/api/calendar/events/$EVENT_ID \
       -H "Authorization: Bearer $ACCESS_TOKEN" \
       -H "Content-Type: application/json" \
       -d '{"title":"Updated Event","description":"Updated event description","start_time":"2026-02-15T14:00:00","end_time":"2026-02-15T15:00:00"}')
@@ -309,7 +309,7 @@ fi
 # Test 7.4: Delete event
 if [ -n "$EVENT_ID" ]; then
     echo "Test 7.4: Delete event"
-    DELETE_EVENT=$(curl -s -w "\n%{http_code}" -X DELETE $BASE_URL/api/calendar/$EVENT_ID \
+        DELETE_EVENT=$(curl -s -w "\n%{http_code}" -X DELETE $BASE_URL/api/calendar/events/$EVENT_ID \
       -H "Authorization: Bearer $ACCESS_TOKEN")
     HTTP_CODE=$(echo "$DELETE_EVENT" | tail -n1)
     
