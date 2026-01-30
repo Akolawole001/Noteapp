@@ -1,0 +1,4 @@
+﻿Flask>=2.0
+Flask-JWT-Extended>=4.0
+Flask-SQLAlchemy>=3.0
+passlib>=1.7
