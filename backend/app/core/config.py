@@ -8,8 +8,8 @@ from pydantic_settings import BaseSettings
 from typing import List
 
 
-# Get the noteapp directory (parent of app directory)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Get the noteapp directory (parent of backend directory)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 ENV_FILE = BASE_DIR / ".env"
 
 
