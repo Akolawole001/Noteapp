@@ -24,8 +24,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install requests
-          # Install Playwright and browsers
-          python -m playwright install --with-deps || true
+
+      - name: Install Playwright browsers
+        working-directory: backend
+        run: |
+          python -m playwright install --with-deps
 
       - name: Start backend (uvicorn)
         working-directory: backend
@@ -39,8 +42,7 @@ jobs:
 
       - name: Run UI Playwright tests
         run: |
-          pip install pytest
-          pytest -q tests/e2e -k e2e
+          pytest -q tests/e2e/test_ui.py
 
       - name: Upload uvicorn logs
         if: failure()
