@@ -1,0 +1,31 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Trigger Vercel Production Deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          # Confirm Vercel token is available
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "VERCEL_TOKEN is not set. Add it to repository secrets as 'VERCEL_TOKEN'." && exit 1
+          fi
+          # Deploy using project settings detected from repo (uses vercel.json)
+          vercel --prod --token "$VERCEL_TOKEN" --confirm
